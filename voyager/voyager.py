@@ -227,6 +227,8 @@ class Voyager:
         self.conversations.append(
             (self.messages[0].content, self.messages[1].content, ai_message.content)
         )
+        print("ai_message.content: =================")
+        print(ai_message.content)
         print("self.messages[0].content: =================")
         print(self.messages[0].content)
         print("self.messages[1].content: =================")

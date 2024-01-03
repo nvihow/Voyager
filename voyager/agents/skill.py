@@ -45,9 +45,20 @@ class SkillManager:
             self.skills = {}
         self.retrieval_top_k = retrieval_top_k
         self.ckpt_dir = ckpt_dir
+
+        # 根据 openai_api_type 选择合适的 embedding_function
+        if openai_api_type == "azure":
+            # 如果 API 类型是 Azure，使用 azure_openai_embeddings_config 配置 OpenAIEmbeddings
+            embedding_config = azure_openai_embeddings_config.dict()
+            embedding_function = OpenAIEmbeddings(**embedding_config)
+            embedding_function.client = azure_openai_embeddings_config.client.embeddings
+        else:
+            # 否则使用默认的 OpenAIEmbeddings 配置
+            embedding_function = OpenAIEmbeddings()
+
         self.vectordb = Chroma(
             collection_name="skill_vectordb",
-            embedding_function=OpenAIEmbeddings(**azure_openai_embeddings_config.dict()) if openai_api_type == "azure" else OpenAIEmbeddings(),
+            embedding_function=embedding_function,
             persist_directory=f"{ckpt_dir}/skill/vectordb",
         )
         assert self.vectordb._collection.count() == len(self.skills), (

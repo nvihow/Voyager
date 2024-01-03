@@ -65,10 +65,20 @@ class CurriculumAgent:
             self.completed_tasks = []
             self.failed_tasks = []
             self.qa_cache = {}
+
+        # 根据 openai_api_type 选择合适的 embedding_function
+        if openai_api_type == "azure":
+            # 如果 API 类型是 Azure，使用 azure_openai_embeddings_config 配置 OpenAIEmbeddings
+            embedding_config = azure_openai_embeddings_config.dict()
+            embedding_function = OpenAIEmbeddings(**embedding_config)
+            embedding_function.client = azure_openai_embeddings_config.client.embeddings
+        else:
+            # 否则使用默认的 OpenAIEmbeddings 配置
+            embedding_function = OpenAIEmbeddings()
         # vectordb for qa cache
         self.qa_cache_questions_vectordb = Chroma(
             collection_name="qa_cache_questions_vectordb",
-            embedding_function=OpenAIEmbeddings(**azure_openai_embeddings_config.dict()) if openai_api_type == "azure" else OpenAIEmbeddings(),
+            embedding_function=embedding_function,
             persist_directory=f"{ckpt_dir}/curriculum/vectordb",
         )
         assert self.qa_cache_questions_vectordb._collection.count() == len(

@@ -2,6 +2,7 @@ from voyager import Voyager
 from voyager.agents import AzureChatModelConfig, AzureOpenAIEmbeddingsConfig
 import myapi
 import os
+from openai import AzureOpenAI
 
 # You can also use mc_port instead of azure_login, but azure_login is highly recommended
 azure_login = {
@@ -27,6 +28,12 @@ replacement_dict = {
     "gpt-3.5-turbo": "test1", # gpt-3.5-turbo
 }
 
+client = AzureOpenAI(
+    api_key=azure_api_key,
+    api_version=azure_api_version,
+    azure_endpoint=azure_url
+)
+
 def GetAzureDeploymentName(model):
     return replacement_dict.get(model)
 
@@ -47,19 +54,17 @@ azure_gpt_35_config = AzureChatModelConfig(
 )
 azure_openai_embeddings_config = AzureOpenAIEmbeddingsConfig(
     openai_api_base=azure_url,
-    model=GetAzureDeploymentName('gpt-35-turbo'),
+    openai_api_version=azure_api_version,
+    # model='text-embedding-ada-002',
+    model=GetAzureDeploymentName('text-embedding-ada-002'),
+    deployment=GetAzureDeploymentName('text-embedding-ada-002'),
     openai_api_type="azure",
-    deployment=GetAzureDeploymentName('gpt-35-turbo'),
     openai_api_key=azure_api_key,	# Not API keys with prefix "sk-"
+    client=client,
 )
 
-# voyager = Voyager(
-#     azure_login=azure_login,
-#     openai_api_type="azure",
-#     azure_gpt_4_config=azure_gpt_4_config,
-#     azure_gpt_35_config=azure_gpt_35_config,
-#     azure_openai_embeddings_config=azure_openai_embeddings_config,
-# )
+
+
 voyager = Voyager(
     #azure_login=azure_login,
     mc_port=myapi.my_mc_port,
@@ -68,6 +73,9 @@ voyager = Voyager(
     azure_gpt_35_config=azure_gpt_35_config,
     azure_openai_embeddings_config=azure_openai_embeddings_config,
     openai_api_key=openai_api_key,
+    # embedding_function=embedding_function,
+    # ckpt_dir=os.getcwd() + '\ckpt',
+    # resume=True,
 )
 
 print('当前目录路径:', os.getcwd())
