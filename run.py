@@ -1,7 +1,7 @@
 from voyager import Voyager
 from voyager.agents import AzureChatModelConfig, AzureOpenAIEmbeddingsConfig
 import myapi
-
+import os
 
 # You can also use mc_port instead of azure_login, but azure_login is highly recommended
 azure_login = {
@@ -70,6 +70,8 @@ voyager = Voyager(
     openai_api_key=openai_api_key,
 )
 
+print('当前目录路径:', os.getcwd())
+print('当前文件路径:', os.path.realpath(__file__))
 
 # start lifelong learning
 voyager.learn()

@@ -1,5 +1,6 @@
 import re
 import time
+import os
 
 import voyager.utils as U
 from javascript import require
@@ -10,7 +11,6 @@ from voyager.prompts import load_prompt
 from voyager.control_primitives_context import load_control_primitives_context
 from voyager.agents.azure_model_config import AzureChatModelConfig
 from voyager.agents.get_llm import get_llm
-
 
 class ActionAgent:
     def __init__(
@@ -212,8 +212,8 @@ class ActionAgent:
         error = None
         while retry > 0:
             try:
-                babel = require("@babel/core")
-                babel_generator = require("@babel/generator").default
+                babel = require(os.getcwd()+"/voyager/env/mineflayer/node_modules/@babel/core")
+                babel_generator = require(os.getcwd()+"/voyager/env/mineflayer/node_modules/@babel/generator").default
 
                 code_pattern = re.compile(r"```(?:javascript|js)(.*?)```", re.DOTALL)
                 code = "\n".join(code_pattern.findall(message.content))
